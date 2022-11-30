@@ -2,10 +2,10 @@ import csv
 
 from django.core.management.base import BaseCommand, CommandError
 from foodgram.settings import BASE_DIR
-from recipes.models import Tag
+from recipes.models import Ingridient
 
 file_model_dict = {
-    'tags.csv': Tag,
+    'ingridients.csv': Ingridient,
 }
 path = BASE_DIR + '../data/'
 
@@ -13,7 +13,7 @@ path = BASE_DIR + '../data/'
 class Command(BaseCommand):
     help = 'Загружает тестовые данные в бд'
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
         for file, model in file_model_dict.items():
             with open(f'{path}{file}') as file:
                 reader = csv.DictReader(file, delimiter=',')
