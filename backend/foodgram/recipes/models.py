@@ -64,4 +64,4 @@ class Ingridient(models.Model):
         max_length=30,
         default='г',
         verbose_name='Единица измерения'
-    )    # List of units ???
+    )
