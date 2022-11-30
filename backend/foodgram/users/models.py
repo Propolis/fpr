@@ -19,11 +19,11 @@ class User(AbstractUser):
     )
 
     username = models.CharField(
-        verbose_name="Имя пользователя", max_length=150, null=True, unique=True
+        verbose_name="Имя пользователя", max_length=32, unique=True
     )
     email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=64)
+    last_name = models.CharField(max_length=64)
 
     @property
     def is_admin(self):
