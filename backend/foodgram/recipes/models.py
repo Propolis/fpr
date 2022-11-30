@@ -17,7 +17,7 @@ class Recipe(models.Model):
     )
 
     # https://docs.djangoproject.com/en/4.1/ref/models/fields/#imagefield
-    # image = models.ImageField(...)
+    image = models.ImageField(upload_to='uploads/')
 
     text = models.TextField(
         verbose_name='Текст рецепта',
@@ -39,13 +39,17 @@ class Recipe(models.Model):
 class Tag(models.Model):
     name = models.CharField(
         max_length=30,
+        unique=True,
         verbose_name='Название тега',
         help_text='Название тега'
     )
-    color = ColorField(default='#2A6CAA')    # https://pypi.org/project/django-colorfield/
-
-    # https://docs.djangoproject.com/en/4.1/ref/contrib/admin/#django.contrib.admin.ModelAdmin.prepopulated_fields
-    slug = models.SlugField()
+    color = ColorField(
+        default='#2A6CAA',
+        unique=True
+    )    # https://pypi.org/project/django-colorfield/
+    slug = models.SlugField(
+        unique=True
+    )
 
 
 class Ingridient(models.Model):
@@ -56,6 +60,7 @@ class Ingridient(models.Model):
     quantity = models.PositiveSmallIntegerField(
         verbose_name='Количество в юнитах'
     )
-    # measurement_unit = models.TextChoices(
-    #     verbose_name='Единица измерения'
-    # )    # List of units ???
+    measurement_unit = models.CharField(
+        max_length=30,
+        verbose_name='Единица измерения'
+    )    # List of units ???
