@@ -2,7 +2,7 @@ from colorfield.fields import ColorField
 from django.contrib.auth import get_user_model
 from django.db import models
 
-User = get_user_model()
+from users.models import User
 
 
 class Recipe(models.Model):
@@ -23,14 +23,14 @@ class Recipe(models.Model):
         verbose_name='Текст рецепта',
         help_text='Напиши рецепт блюда!'
     )
-    # ingridients = models.ManyToManyField(
-    #     'Ingridient',
-    #     related_name='recipes'
-    # )
-    # tags = models.ManyToManyField(
-    #     'Tag',
-    #     related_name='recipes'
-    # )
+    ingridients = models.ManyToManyField(
+        'Ingridient',
+        related_name='recipes'
+    )
+    tags = models.ManyToManyField(
+        'Tag',
+        related_name='recipes'
+    )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки в минутах',
         help_text='Сколько минут займёт готовка?'
@@ -54,6 +54,6 @@ class Ingridient(models.Model):
     quantity = models.PositiveSmallIntegerField(
         verbose_name='Количество в юнитах'
     )
-    # measurement_unit = models.TextChoices(
-    #     verbose_name='Единица измерения'
-    # )    # List of units ???
+    measurement_unit = models.TextChoices(
+        verbose_name='Единица измерения'
+    )    # List of units ???
