@@ -16,7 +16,6 @@ class Recipe(models.Model):
         help_text='Назови своё блюдо!'
     )
 
-    # https://docs.djangoproject.com/en/4.1/ref/models/fields/#imagefield
     image = models.ImageField(upload_to='uploads/')
 
     text = models.TextField(
