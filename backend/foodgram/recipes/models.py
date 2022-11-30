@@ -1,5 +1,4 @@
 from colorfield.fields import ColorField
-from django.contrib.auth import get_user_model
 from django.db import models
 
 from users.models import User
@@ -12,6 +11,7 @@ class Recipe(models.Model):
         related_name='recipes'
     )
     name = models.CharField(
+        max_length=100,
         verbose_name='Название рецепта',
         help_text='Назови своё блюдо!'
     )
@@ -38,6 +38,7 @@ class Recipe(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(
+        max_length=30,
         verbose_name='Название тега',
         help_text='Название тега'
     )
@@ -49,6 +50,7 @@ class Tag(models.Model):
 
 class Ingridient(models.Model):
     name = models.CharField(
+        max_length=100,
         verbose_name='Название ингридиента'
     )
     quantity = models.PositiveSmallIntegerField(
