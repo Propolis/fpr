@@ -54,6 +54,6 @@ class Ingridient(models.Model):
     quantity = models.PositiveSmallIntegerField(
         verbose_name='Количество в юнитах'
     )
-    measurement_unit = models.TextChoices(
-        verbose_name='Единица измерения'
-    )    # List of units ???
+    # measurement_unit = models.TextChoices(
+    #     verbose_name='Единица измерения'
+    # )    # List of units ???
