@@ -3,18 +3,18 @@ from django.db import models
 
 
 class User(AbstractUser):
-    USER = 'user'
-    ADMIN = 'admin'
+    USER = 'USR'
+    ADMIN = 'ADM'
     USER_ROLE_CHOICES = [
-        (USER, 'USR'),
-        (ADMIN, 'ADM'),
+        (USER, 'user'),
+        (ADMIN, 'admin')
     ]
 
     role = models.CharField(
         max_length=3,
         verbose_name="Роль",
         choices=USER_ROLE_CHOICES,
-        default=USER,
+        default='USR',
         blank=False,
     )
 
