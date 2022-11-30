@@ -17,7 +17,7 @@ class Recipe(models.Model):
     )
 
     # https://docs.djangoproject.com/en/4.1/ref/models/fields/#imagefield
-    image = models.ImageField(...)
+    # image = models.ImageField(...)
 
     text = models.TextField(
         verbose_name='Текст рецепта',
