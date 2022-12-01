@@ -1,10 +1,11 @@
 import csv
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand # , CommandError
 from foodgram.settings import BASE_DIR
-from recipes.models import Ingridient
+from recipes.models import Ingridient, Tag
 
 file_model_dict = {
+    # 'tags.csv': Tag, 
     'ingridients.csv': Ingridient,
 }
 path = BASE_DIR + '../data/'
