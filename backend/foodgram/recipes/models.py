@@ -24,6 +24,7 @@ class Recipe(models.Model):
     )
     ingridients = models.ManyToManyField(
         'Ingridient',
+        through='RecipeIngridient',
         related_name='recipes'
     )
     tags = models.ManyToManyField(
@@ -34,6 +35,9 @@ class Recipe(models.Model):
         verbose_name='Время готовки в минутах',
         help_text='Сколько минут займёт готовка?'
     )
+
+    def __str__(self):
+        return self.name
 
 class Tag(models.Model):
     name = models.CharField(
@@ -50,17 +54,34 @@ class Tag(models.Model):
         unique=True
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Ingridient(models.Model):
     name = models.CharField(
         max_length=100,
         verbose_name='Название ингридиента'
     )
-    quantity = models.PositiveSmallIntegerField(
-        verbose_name='Количество в юнитах'
-    )
     measurement_unit = models.CharField(
         max_length=30,
         default='г',
         verbose_name='Единица измерения'
+    )
+
+    def __str__(self):
+        return self.name
+
+
+class RecipeIngridient(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.CASCADE
+    )
+    ingridient = models.ForeignKey(
+        Ingridient,
+        on_delete=models.CASCADE
+    )
+    quantity = models.PositiveSmallIntegerField(
+        verbose_name='Количество в юнитах'
     )
