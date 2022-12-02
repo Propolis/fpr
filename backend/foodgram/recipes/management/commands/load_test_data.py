@@ -5,10 +5,10 @@ from foodgram.settings import BASE_DIR
 from recipes.models import Ingridient, Tag
 
 file_model_dict = {
-    # 'tags.csv': Tag, 
-    'ingridients.csv': Ingridient,
+    'tags.csv': Tag, 
+    'ingredients.csv': Ingridient,
 }
-path = BASE_DIR + '../data/'
+path = str(BASE_DIR) + ('/../../data/')
 
 
 class Command(BaseCommand):
@@ -16,6 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for file, model in file_model_dict.items():
+            model.objects.all().delete()
             with open(f'{path}{file}') as file:
                 reader = csv.DictReader(file, delimiter=',')
                 for data in reader:
