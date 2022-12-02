@@ -22,9 +22,9 @@ class Recipe(models.Model):
         verbose_name='Текст рецепта',
         help_text='Напиши рецепт блюда!'
     )
-    ingridients = models.ManyToManyField(
-        'Ingridient',
-        through='RecipeIngridient',
+    ingredients = models.ManyToManyField(
+        'Ingredient',
+        through='RecipeIngredient',
         related_name='recipes'
     )
     tags = models.ManyToManyField(
@@ -58,7 +58,7 @@ class Tag(models.Model):
         return self.name
 
 
-class Ingridient(models.Model):
+class Ingredient(models.Model):
     name = models.CharField(
         max_length=100,
         verbose_name='Название ингридиента'
@@ -73,13 +73,13 @@ class Ingridient(models.Model):
         return self.name
 
 
-class RecipeIngridient(models.Model):
+class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE
     )
-    ingridient = models.ForeignKey(
-        Ingridient,
+    ingredient = models.ForeignKey(
+        Ingredient,
         on_delete=models.CASCADE
     )
     quantity = models.PositiveSmallIntegerField(

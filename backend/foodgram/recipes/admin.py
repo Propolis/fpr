@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Ingridient, Recipe, Tag
+from .models import Ingredient, Recipe, RecipeIngredient, Tag
 
 
-@admin.register(Ingridient)
-class IngridientAdmin(admin.ModelAdmin):
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
     pass
 
 
@@ -14,4 +14,9 @@ class RecipeAdmin(admin.ModelAdmin):
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(RecipeIngredient)
+class RecipeIngredientAdmin(admin.ModelAdmin):
     pass
