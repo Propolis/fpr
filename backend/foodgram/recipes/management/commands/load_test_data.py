@@ -1,5 +1,4 @@
 import csv
-import sys
 
 from django.core.management.base import BaseCommand # , CommandError
 from foodgram.settings import BASE_DIR
@@ -19,8 +18,6 @@ class Command(BaseCommand):
         for file, model in file_model_dict.items():
             model.objects.all().delete()
             with open(f'{path}{file}') as file:
-                # counter = sum(1 for _ in file)-1
-                # sys.stdout.write(str(counter) + '\n')
                 reader = csv.DictReader(file, delimiter=',')
                 for data in reader:
                     pass
