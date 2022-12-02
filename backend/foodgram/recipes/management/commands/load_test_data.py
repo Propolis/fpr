@@ -16,9 +16,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for file, model in file_model_dict.items():
-            model.objects.all().delete()
             with open(f'{path}{file}') as file:
                 reader = csv.DictReader(file, delimiter=',')
                 for data in reader:
-                    pass
-                    model.objects.get_or_create(**data)
+                    model.objects.create(**data)
