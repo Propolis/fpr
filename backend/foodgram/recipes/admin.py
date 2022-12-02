@@ -1,3 +1,17 @@
 from django.contrib import admin
+from .models import Ingridient, Recipe, Tag
 
-# Register your models here.
+
+@admin.register(Ingridient)
+class IngridientAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    pass
