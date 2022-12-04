@@ -7,7 +7,6 @@ class RecipeIngredientInline(admin.TabularInline):
     extra = 1
 
 
-
 @admin.register(Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     pass
