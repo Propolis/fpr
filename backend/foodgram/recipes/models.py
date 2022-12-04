@@ -49,7 +49,7 @@ class Tag(models.Model):
     color = ColorField(
         default='#2A6CAA',
         unique=True
-    )    # https://pypi.org/project/django-colorfield/
+    )
     slug = models.SlugField(
         unique=True
     )
