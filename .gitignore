@@ -131,6 +131,7 @@ dmypy.json
 # .idea
 .idea
 
+
 # Django
 migrations/*
 !__init__.py
@@ -139,3 +140,7 @@ migrations/*
 # Media files
 media/
 uploads/
+
+
+# Other
+todo
