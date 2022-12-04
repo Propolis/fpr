@@ -130,3 +130,12 @@ dmypy.json
 
 # .idea
 .idea
+
+# Django
+migrations/*
+!__init__.py
+
+
+# Media files
+media/
+uploads/
