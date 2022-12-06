@@ -19,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
-            # 'is_subscribed',
+            # 'is_subscribed:bool',
         ]
 
 
@@ -41,8 +41,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            # 'is_favorited' -> bool,
-            # 'is_in_shopping_cart' -> bool,
+            # 'is_favorited': bool,
+            # 'is_in_shopping_cart': bool,
             'name',
             'image',    # Преобразовывать картинки в base64 (см. ЯП)
             'text',
