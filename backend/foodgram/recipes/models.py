@@ -16,7 +16,10 @@ class Recipe(models.Model):
         help_text='Назови своё блюдо!'
     )
 
-    image = models.ImageField(upload_to='recipes/images/')
+    image = models.ImageField(
+        upload_to='recipes/images/',
+        blank=True
+    )
 
     text = models.TextField(
         verbose_name='Текст рецепта',
@@ -29,7 +32,8 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         'Tag',
-        related_name='recipes'
+        related_name='recipes',
+        blank=True
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки в минутах',
