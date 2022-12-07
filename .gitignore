@@ -63,10 +63,10 @@ db.sqlite3-journal
 migrations/*
 !migrations/__init__.py
 
+
 # Media and static files
-media/
-static/
-uploads/
+media/*
+static/*
 
 # Flask stuff:
 instance/
@@ -141,5 +141,17 @@ dmypy.json
 # .idea
 .idea
 
+
+# Django
+migrations/*
+!__init__.py
+
+
+# Media files
+media/
+uploads/
+
+
 # Other
 todo
+

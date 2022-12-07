@@ -1,11 +1,17 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import TagViewSet
+from .views import (
+    IngredientViewSet,
+    TagViewSet,
+    RecipeViewSet,
+)
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
+router.register('ingredients', IngredientViewSet)
 router.register('tags', TagViewSet)
-urlpatterns = router.urls
-urlpatterns += [
-    path('auth/', include('djoser.urls')),
+router.register('recipes', RecipeViewSet)
+
+urlpatterns = [
+    path('', include(router.urls)),
 ]

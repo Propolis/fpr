@@ -8,7 +8,8 @@ class Recipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='recipes'
+        related_name='recipes',
+        blank=False
     )
     name = models.CharField(
         max_length=100,
@@ -16,7 +17,10 @@ class Recipe(models.Model):
         help_text='Назови своё блюдо!'
     )
 
-    image = models.ImageField(upload_to='recipes/images/')
+    image = models.ImageField(
+        upload_to='recipes/images/',
+        blank=True
+    )
 
     text = models.TextField(
         verbose_name='Текст рецепта',
@@ -29,7 +33,8 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         'Tag',
-        related_name='recipes'
+        related_name='recipes',
+        blank=True
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки в минутах',
@@ -83,6 +88,6 @@ class RecipeIngredient(models.Model):
         Ingredient,
         on_delete=models.CASCADE
     )
-    quantity = models.PositiveSmallIntegerField(
+    amount = models.PositiveSmallIntegerField(
         verbose_name='Количество в юнитах'
     )
