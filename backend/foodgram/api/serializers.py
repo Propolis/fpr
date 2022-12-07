@@ -56,15 +56,16 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=True,
         required = False
     )
-    author = serializers.SlugRelatedField(
-        slug_field='username',
-        default=serializers.CurrentUserDefault(),
+    author = UserSerializer(
         read_only=True,
+        many=False,
+        required=False
     )
     ingredients = RecipeIngredientSerializer(
         source='recipeingredient_set',
         read_only=False,
-        many=True
+        many=True,
+        required=True   # False ???
     )
 
     class Meta:
