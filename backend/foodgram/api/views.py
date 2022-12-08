@@ -36,6 +36,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
+    serializer_class = ReadOnlyRecipeSerializer    # Mark For Delete
 
     def get_serializer_class(self):
         ACTION_SERIALIZER_CLASS = {
@@ -47,4 +48,5 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         author = User.objects.get(id=1)
+        # author = self.request.user
         serializer.save(author=author)

@@ -42,9 +42,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredient.objects.all()
-    )
+    id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
 
@@ -53,20 +51,10 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'measurement_unit', 'amount']
 
 
-class RecipeTagSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='tag.id')
-
-    class Meta:
-        model = RecipeTag
-
-
 class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer(many=False)
-    ingredients = RecipeIngredientSerializer(
-        source='recipeingredient_set',
-        many=True
-    )
+    ingredients = RecipeIngredientSerializer(many=True, source='recipeingredient_set')
 
     class Meta:
         read_only_fields = ['__all__']
@@ -90,7 +78,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(
         read_only=False,
         many=True,
-        required=True
+        required=True,
     )
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
@@ -111,15 +99,15 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        ingredient_data = validated_data.pop('ingredients')
+        ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags', None)
         recipe = Recipe.objects.create(**validated_data)
-        for ingredient_item in ingredient_data:
-            ingredient = ingredient_data[0].get('id')
-            amount = ingredient_data[0].get('amount')
+        for ingredient in ingredients:
+            ingredient_id = ingredient.get('id')
+            amount = ingredient.get('amount')
             RecipeIngredient.objects.create(
                 recipe=recipe,
-                ingredient=ingredient,
+                ingredient=ingredient_id,
                 amount=amount
             )
         if tags:
