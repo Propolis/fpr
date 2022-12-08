@@ -16,12 +16,10 @@ class Recipe(models.Model):
         verbose_name='Название рецепта',
         help_text='Назови своё блюдо!'
     )
-
     image = models.ImageField(
         upload_to='recipes/images/',
         blank=True
     )
-
     text = models.TextField(
         verbose_name='Текст рецепта',
         help_text='Напиши рецепт блюда!'
@@ -43,6 +41,7 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class Tag(models.Model):
     name = models.CharField(
