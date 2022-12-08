@@ -42,7 +42,6 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-        
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
@@ -109,15 +108,12 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        print(validated_data)
         ingredient_data = validated_data.pop('ingredients')
         tags = validated_data.pop('tags', None)
         recipe = Recipe.objects.create(**validated_data)
         for ingredient_item in ingredient_data:
-            print(ingredient_item)
             ingredient = ingredient_data[0].get('id')
             amount = ingredient_data[0].get('amount')
-            print(ingredient)
             RecipeIngredient.objects.create(
                 recipe=recipe,
                 ingredient=ingredient,
@@ -125,21 +121,5 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             )
         if tags:
             for tag in tags:
-                print(tag)
                 current_tag = RecipeTag.objects.create(recipe=recipe, tag=tag)
-                # recipe.tags.add(current_tag)
-
-
-
-
-    # def create(self, validated_data):
-    #     print(validated_data)
-    #     tags = validated_data.pop('tags', None)
-    #     recipe = Recipe.objects.create(**validated_data)
-
-    #     if tags:
-    #         for tag in tags:
-    #             current_tag, is_created = Tag.objects.get_or_create(**tag)
-    #             recipe.tags.add(current_tag)
-
-    #     return recipe
+        return recipe
