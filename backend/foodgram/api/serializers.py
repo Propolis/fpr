@@ -63,7 +63,10 @@ class RecipeTagSerializer(serializers.ModelSerializer):
 class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer(many=False)
-    ingredients = RecipeIngredientSerializer(many=True)
+    ingredients = RecipeIngredientSerializer(
+        source='recipeingredient_set',
+        many=True
+    )
 
     class Meta:
         read_only_fields = ['__all__']
