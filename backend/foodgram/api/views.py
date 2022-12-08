@@ -4,14 +4,15 @@ from recipes.models import (
     Recipe,
     Tag,
 )
-from rest_framework import status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import (
+    CreateRecipeSerializer,
     IngredientSerializer,
     TagSerializer,
-    ListRetrieveRecipeSerializer,
+    ReadOnlyRecipeSerializer,
     UserSerializer,
 )
 
@@ -35,4 +36,16 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = ListRetrieveRecipeSerializer
+
+    def get_serializer_class(self):
+        ACTION_SERIALIZER_CLASS = {
+            'list': ReadOnlyRecipeSerializer,
+            'retrieve': ReadOnlyRecipeSerializer,
+            'create': CreateRecipeSerializer,
+        }
+        return ACTION_SERIALIZER_CLASS.get(self.action)
+
+    def perform_create(self, serializer):
+        # author = self.request.user
+        author = User.objects.get(id=1)
+        serializer.save(author=author)

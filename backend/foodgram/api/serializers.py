@@ -42,7 +42,10 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
+        
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all()
+    )
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
 
@@ -58,24 +61,13 @@ class RecipeTagSerializer(serializers.ModelSerializer):
         model = RecipeTag
 
 
-class ListRetrieveRecipeSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(
-        read_only=True,
-        many=True,
-        required=False
-    )
-    author = UserSerializer(
-        read_only=True,
-        many=False,
-        required=False
-    )
-    ingredients = IngredientSerializer(
-        read_only=True,
-        many=True,
-        required=False
-    )
+class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
+    tags = TagSerializer(many=True)
+    author = UserSerializer(many=False)
+    ingredients = RecipeIngredientSerializer(many=True)
 
     class Meta:
+        read_only_fields = ['__all__']
         model = Recipe
         fields = [
             'id',
@@ -91,12 +83,53 @@ class ListRetrieveRecipeSerializer(serializers.ModelSerializer):
         ]
 
 
-    # ingredients = RecipeIngredientSerializer(
-    #     source='recipeingredient_set',
-    #     read_only=True,
-    #     many=True,
-    #     required=False
-    # )
+class CreateRecipeSerializer(serializers.ModelSerializer):
+
+    ingredients = RecipeIngredientSerializer(
+        read_only=False,
+        many=True,
+        required=True
+    )
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        read_only=False,
+        many=True,
+        required=False
+    )
+
+    class Meta:
+        model = Recipe
+        fields = [
+            'ingredients',
+            'tags',
+            'image',
+            'name',
+            'text',
+            'cooking_time',
+        ]
+
+    def create(self, validated_data):
+        print(validated_data)
+        ingredient_data = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags', None)
+        recipe = Recipe.objects.create(**validated_data)
+        for ingredient_item in ingredient_data:
+            print(ingredient_item)
+            ingredient = ingredient_data[0].get('id')
+            amount = ingredient_data[0].get('amount')
+            print(ingredient)
+            RecipeIngredient.objects.create(
+                recipe=recipe,
+                ingredient=ingredient,
+                amount=amount
+            )
+        if tags:
+            for tag in tags:
+                print(tag)
+                current_tag = RecipeTag.objects.create(recipe=recipe, tag=tag)
+                # recipe.tags.add(current_tag)
+
+
 
 
     # def create(self, validated_data):
