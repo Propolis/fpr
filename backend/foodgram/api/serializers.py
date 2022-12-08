@@ -54,7 +54,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(
         read_only=False,
         many=True,
-        required = False
+        required=False
     )
     author = UserSerializer(
         read_only=True,
