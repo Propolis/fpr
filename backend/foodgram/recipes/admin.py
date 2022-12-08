@@ -1,9 +1,14 @@
 from django.contrib import admin
-from .models import Ingredient, Recipe, RecipeIngredient, Tag
+from .models import Ingredient, Recipe, RecipeIngredient, RecipeTag, Tag
 
 
 class RecipeIngredientInline(admin.TabularInline):
     model = RecipeIngredient
+    extra = 1
+
+
+class RecipeTagInline(admin.TabularInline):
+    model = RecipeTag
     extra = 1
 
 
@@ -17,7 +22,10 @@ class IngredientAdmin(admin.ModelAdmin):
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('name', 'author')
     list_filter = ('name', 'author', 'tags')
-    inlines = [RecipeIngredientInline]
+    inlines = [
+        RecipeIngredientInline,
+        RecipeTagInline
+    ]
 
 
 @admin.register(Tag)

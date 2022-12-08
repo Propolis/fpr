@@ -1,7 +1,8 @@
 from colorfield.fields import ColorField
+from django.contrib.auth import get_user_model
 from django.db import models
 
-from users.models import User
+User = get_user_model()
 
 
 class Recipe(models.Model):
@@ -31,6 +32,7 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         'Tag',
+        through='RecipeTag',
         related_name='recipes',
         blank=True
     )
@@ -78,14 +80,25 @@ class Ingredient(models.Model):
         return self.name
 
 
+class RecipeTag(models.Model):
+    recipe = models.ForeignKey(
+        Recipe,
+        on_delete=models.DO_NOTHING
+    )
+    tag = models.ForeignKey(
+        Tag,
+        on_delete=models.DO_NOTHING
+    )
+
+
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
-        on_delete=models.CASCADE
+        on_delete=models.DO_NOTHING
     )
     ingredient = models.ForeignKey(
         Ingredient,
-        on_delete=models.CASCADE
+        on_delete=models.DO_NOTHING
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество в юнитах'

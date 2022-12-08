@@ -5,7 +5,8 @@ from recipes.models import (
     Ingredient,
     Tag,
     Recipe,
-    RecipeIngredient
+    RecipeIngredient,
+    RecipeTag
 )
 
 User = get_user_model()
@@ -50,9 +51,16 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'measurement_unit', 'amount']
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RecipeTagSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='tag.id')
+
+    class Meta:
+        model = RecipeTag
+
+
+class ListRetrieveRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(
-        read_only=False,
+        read_only=True,
         many=True,
         required=False
     )
@@ -61,11 +69,10 @@ class RecipeSerializer(serializers.ModelSerializer):
         many=False,
         required=False
     )
-    ingredients = RecipeIngredientSerializer(
-        source='recipeingredient_set',
-        read_only=False,
+    ingredients = IngredientSerializer(
+        read_only=True,
         many=True,
-        required=True   # False ???
+        required=False
     )
 
     class Meta:
@@ -83,13 +90,23 @@ class RecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         ]
 
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        recipe = Recipe.objects.create(**validated_data)
 
-        if tags:
-            for tag in tags:
-                current_tag, created = Tag.objects.get_or_create(**tag)
-                recipe.tags.add(current_tag)
+    # ingredients = RecipeIngredientSerializer(
+    #     source='recipeingredient_set',
+    #     read_only=True,
+    #     many=True,
+    #     required=False
+    # )
 
-        return recipe
+
+    # def create(self, validated_data):
+    #     print(validated_data)
+    #     tags = validated_data.pop('tags', None)
+    #     recipe = Recipe.objects.create(**validated_data)
+
+    #     if tags:
+    #         for tag in tags:
+    #             current_tag, is_created = Tag.objects.get_or_create(**tag)
+    #             recipe.tags.add(current_tag)
+
+    #     return recipe
