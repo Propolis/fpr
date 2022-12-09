@@ -41,7 +41,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'measurement_unit']
 
 
-class RecipeIngredientSerializer(serializers.ModelSerializer):
+class ReadOnlyRecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(source='ingredient.measurement_unit')
@@ -51,10 +51,26 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'measurement_unit', 'amount']
 
 
+class CreateRecipeIngredientSerializer(serializers.ModelSerializer):
+    id = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ['id', 'amount']
+
+
+
+class RecipeTagSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='tag.id')
+
+    class Meta:
+        model = RecipeTag
+
+
 class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer(many=False)
-    ingredients = RecipeIngredientSerializer(many=True, source='recipeingredient_set')
+    ingredients = ReadOnlyRecipeIngredientSerializer(many=True, source='recipeingredient_set')
 
     class Meta:
         read_only_fields = ['__all__']
@@ -75,7 +91,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
 
 class CreateRecipeSerializer(serializers.ModelSerializer):
 
-    ingredients = RecipeIngredientSerializer(
+    ingredients = CreateRecipeIngredientSerializer(
         read_only=False,
         many=True,
         required=True,
