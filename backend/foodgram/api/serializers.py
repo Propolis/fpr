@@ -140,7 +140,6 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
 
     def update(self, recipe, validated_data):
-        print(validated_data)
         ingredients = validated_data.pop('ingredients', None)
         tags = validated_data.pop('tags', None)
         if ingredients:
