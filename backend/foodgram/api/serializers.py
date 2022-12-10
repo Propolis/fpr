@@ -52,7 +52,13 @@ class ReadOnlyRecipeIngredientSerializer(serializers.ModelSerializer):
 
 
 class CreateRecipeIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
+    # amount = serializers.IntegerField(source='recipeingredient_set')
+    id = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredient.objects.all(),
+        read_only=False
+    )
+    # amount = serializers.PrimaryKeyRelatedField(queryset=Ingredient.recipes)
+    # id = serializers.ModelField(model_field=Ingredient)
 
     class Meta:
         model = RecipeIngredient
@@ -90,11 +96,10 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
 
 
 class CreateRecipeSerializer(serializers.ModelSerializer):
-
-    ingredients = serializers.HyperlinkedModelSerializer(
+    ingredients = CreateRecipeIngredientSerializer(
         read_only=False,
         many=True,
-        required=True,
+        required=True
     )
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
@@ -104,6 +109,7 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+        depth = 3
         model = Recipe
         fields = [
             'ingredients',
@@ -113,6 +119,11 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time',
         ]
+
+    def to_representation(self, recipe):
+        serializer = ReadOnlyRecipeSerializer(recipe, context=self.context)
+        return serializer.data
+
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
@@ -128,5 +139,5 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             )
         if tags:
             for tag in tags:
-                current_tag = RecipeTag.objects.create(recipe=recipe, tag=tag)
+                RecipeTag.objects.create(recipe=recipe, tag=tag)
         return recipe
