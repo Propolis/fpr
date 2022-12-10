@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import (
-    CreateUpdateRecipeSerializer,
+    CreateOrUpdateRecipeSerializer,
     IngredientSerializer,
     TagSerializer,
     ReadOnlyRecipeSerializer,
@@ -41,9 +41,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ACTION_SERIALIZER_CLASS = {
             'list': ReadOnlyRecipeSerializer,
             'retrieve': ReadOnlyRecipeSerializer,
-            'create': CreateUpdateRecipeSerializer,
-            'update': CreateUpdateRecipeSerializer,
-            'partial_update': CreateUpdateRecipeSerializer
+            'create': CreateOrUpdateRecipeSerializer,
+            'update': CreateOrUpdateRecipeSerializer,
+            'partial_update': CreateOrUpdateRecipeSerializer
         }
         return ACTION_SERIALIZER_CLASS.get(self.action)
 
@@ -56,3 +56,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         author = User.objects.get(id=1)
         # author = self.request.user
         serializer.save()
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        instance.delete()
