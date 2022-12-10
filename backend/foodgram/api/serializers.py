@@ -52,7 +52,7 @@ class ReadOnlyRecipeIngredientSerializer(serializers.ModelSerializer):
 
 
 class CreateRecipeIngredientSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
 
     class Meta:
         model = RecipeIngredient
@@ -91,7 +91,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
 
 class CreateRecipeSerializer(serializers.ModelSerializer):
 
-    ingredients = CreateRecipeIngredientSerializer(
+    ingredients = serializers.HyperlinkedModelSerializer(
         read_only=False,
         many=True,
         required=True,
