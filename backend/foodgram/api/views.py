@@ -46,8 +46,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return ACTION_SERIALIZER_CLASS.get(self.action)
 
     def perform_create(self, serializer):
-        print(self.request.data)
-        print(serializer.validated_data)
         author = User.objects.get(id=1)
         # author = self.request.user
         serializer.save(author=author)
