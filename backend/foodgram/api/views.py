@@ -42,6 +42,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'list': ReadOnlyRecipeSerializer,
             'retrieve': ReadOnlyRecipeSerializer,
             'create': CreateRecipeSerializer,
+            'update': CreateRecipeSerializer,
+            'partial_update': CreateRecipeSerializer
         }
         return ACTION_SERIALIZER_CLASS.get(self.action)
 
@@ -49,3 +51,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         author = User.objects.get(id=1)
         # author = self.request.user
         serializer.save(author=author)
+
+    def perform_update(self, serializer):
+        author = User.objects.get(id=1)
+        # author = self.request.user
+        serializer.save()

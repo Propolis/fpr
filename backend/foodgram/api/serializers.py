@@ -62,7 +62,6 @@ class CreateRecipeIngredientSerializer(serializers.ModelSerializer):
         fields = ['id', 'amount']
 
 
-
 class RecipeTagSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='tag.id')
 
@@ -135,6 +134,27 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                 amount=amount
             )
         if tags:
+            for tag in tags:
+                RecipeTag.objects.create(recipe=recipe, tag=tag)
+        return recipe
+
+
+    def update(self, recipe, validated_data):
+        print(validated_data)
+        ingredients = validated_data.pop('ingredients', None)
+        tags = validated_data.pop('tags', None)
+        if ingredients:
+            recipe.ingredients.clear()
+            for ingredient in ingredients:
+                ingredient_id = ingredient.get('id')
+                amount = ingredient.get('amount')
+                RecipeIngredient.objects.create(
+                    recipe=recipe,
+                    ingredient=ingredient_id,
+                    amount=amount
+                )
+        if tags:
+            recipe.tags.clear()
             for tag in tags:
                 RecipeTag.objects.create(recipe=recipe, tag=tag)
         return recipe
