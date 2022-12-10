@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import (
-    CreateRecipeSerializer,
+    CreateUpdateRecipeSerializer,
     IngredientSerializer,
     TagSerializer,
     ReadOnlyRecipeSerializer,
@@ -41,9 +41,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ACTION_SERIALIZER_CLASS = {
             'list': ReadOnlyRecipeSerializer,
             'retrieve': ReadOnlyRecipeSerializer,
-            'create': CreateRecipeSerializer,
-            'update': CreateRecipeSerializer,
-            'partial_update': CreateRecipeSerializer
+            'create': CreateUpdateRecipeSerializer,
+            'update': CreateUpdateRecipeSerializer,
+            'partial_update': CreateUpdateRecipeSerializer
         }
         return ACTION_SERIALIZER_CLASS.get(self.action)
 

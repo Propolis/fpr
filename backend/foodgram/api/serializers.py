@@ -91,7 +91,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
         ]
 
 
-class CreateRecipeSerializer(serializers.ModelSerializer):
+class CreateUpdateRecipeSerializer(serializers.ModelSerializer):
     ingredients = CreateRecipeIngredientSerializer(
         read_only=False,
         many=True,
