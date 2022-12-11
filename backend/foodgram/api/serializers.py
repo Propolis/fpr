@@ -27,24 +27,6 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-# class UserSignUpSerializer(UserSerializer):
-
-#     def validate_username(self, value):
-#         if value.lower() == "me":
-#             raise serializers.ValidationError("Username 'me' is not valid")
-#         return value
-
-#     class Meta:
-#         model = User
-#         fields = ['username', 'email']
-
-
-# class TokenSerializer(serializers.Serializer):
-#     email = serializers.CharField()
-#     pasword = serializers.CharField()
-#     confirmation_code = serializers.CharField()
-
-
 class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
