@@ -154,6 +154,13 @@ REST_FRAMEWORK = {
     ]
 }
 
+
+# Djoser settings
+
+DJOSER = {
+    'LOGIN_FIELD': 'email'
+}
+
 # CORS Settings
 
 CORS_ALLOWED_ORIGINS = [
