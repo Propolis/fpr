@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from recipes.models import (
     Ingredient,
@@ -24,6 +25,24 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             # 'is_subscribed:bool',
         ]
+
+
+# class UserSignUpSerializer(UserSerializer):
+
+#     def validate_username(self, value):
+#         if value.lower() == "me":
+#             raise serializers.ValidationError("Username 'me' is not valid")
+#         return value
+
+#     class Meta:
+#         model = User
+#         fields = ['username', 'email']
+
+
+# class TokenSerializer(serializers.Serializer):
+#     email = serializers.CharField()
+#     pasword = serializers.CharField()
+#     confirmation_code = serializers.CharField()
 
 
 class TagSerializer(serializers.ModelSerializer):
