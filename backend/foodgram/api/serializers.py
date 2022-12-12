@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from recipes.models import (
+    FavoriteRecipe,
     Ingredient,
     Tag,
     Recipe,
@@ -75,6 +76,19 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
     author = UserSerializer(many=False)
     ingredients = ReadOnlyRecipeIngredientSerializer(many=True, source='recipeingredient_set')
+    is_favorited = serializers.SerializerMethodField(method_name='check_is_favorited')
+
+    def in_list(self, obj, model):
+        request = self.context.get('request')
+        if request is None or request.user.is_anonymous:
+            return False
+        return model.objects.filter(user=request.user, recipe=obj).exists()
+
+    def check_is_favorited(self, obj):
+        return self.in_list(obj, FavoriteRecipe)
+
+    # def get_is_in_shopping_cart(self, obj):
+    #     return self.in_list(obj, ShoppingCart)
 
     class Meta:
         read_only_fields = ['__all__']
@@ -84,7 +98,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
             'tags',
             'author',
             'ingredients',
-            # 'is_favorited': bool,
+            'is_favorited',
             # 'is_in_shopping_cart': bool,
             'name',
             'image',    # Картинка закодирована в base64 (см. ЯП)
