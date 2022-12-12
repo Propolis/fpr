@@ -173,3 +173,15 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
             for tag in tags:
                 RecipeTag.objects.create(recipe=recipe, tag=tag)
         return recipe
+
+
+class ShortRecipeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = [
+            'id',
+            'name',
+            'image',
+            'cooking_time'
+        ]
