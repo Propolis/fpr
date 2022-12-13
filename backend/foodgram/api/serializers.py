@@ -9,7 +9,8 @@ from recipes.models import (
     Tag,
     Recipe,
     RecipeIngredient,
-    RecipeTag
+    RecipeTag,
+    ShoppingCart
 )
 
 User = get_user_model()
@@ -77,18 +78,19 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     author = UserSerializer(many=False)
     ingredients = ReadOnlyRecipeIngredientSerializer(many=True, source='recipeingredient_set')
     is_favorited = serializers.SerializerMethodField(method_name='check_is_favorited')
+    is_in_shopping_cart = serializers.SerializerMethodField(method_name='check_is_in_shopping_cart')
 
-    def in_list(self, obj, model):
+    def is_in_list(self, obj, model):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
         return model.objects.filter(user=request.user, recipe=obj).exists()
 
-    def check_is_favorited(self, obj):
-        return self.in_list(obj, FavoriteRecipe)
+    def check_is_favorited(self, recipe):
+        return self.is_in_list(recipe, FavoriteRecipe)
 
-    # def get_is_in_shopping_cart(self, obj):
-    #     return self.in_list(obj, ShoppingCart)
+    def check_is_in_shopping_cart(self, recipe):
+        return self.is_in_list(recipe, ShoppingCart)
 
     class Meta:
         read_only_fields = ['__all__']
@@ -99,7 +101,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
             'author',
             'ingredients',
             'is_favorited',
-            # 'is_in_shopping_cart': bool,
+            'is_in_shopping_cart',
             'name',
             'image',    # Картинка закодирована в base64 (см. ЯП)
             'text',
@@ -175,7 +177,7 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
         return recipe
 
 
-class ShortRecipeSerializer(serializers.ModelSerializer):
+class ShortReadOnlyRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe

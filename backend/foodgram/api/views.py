@@ -4,6 +4,7 @@ from recipes.models import (
     FavoriteRecipe,
     Ingredient,
     Recipe,
+    ShoppingCart,
     Tag,
 )
 from django.core.mail import send_mail
@@ -17,9 +18,9 @@ from rest_framework.views import APIView
 from .serializers import (
     CreateOrUpdateRecipeSerializer,
     IngredientSerializer,
-    TagSerializer,
     ReadOnlyRecipeSerializer,
-    ShortRecipeSerializer
+    ShortReadOnlyRecipeSerializer,
+    TagSerializer,
 )
 
 User = get_user_model()
@@ -60,7 +61,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             if FavoriteRecipe.objects.filter(recipe=recipe, user=user).exists():
                 raise ValidationError('Уже в избранном!')
             FavoriteRecipe.objects.create(recipe=recipe, user=user)
-            serializer = ShortRecipeSerializer(recipe)
+            serializer = ShortReadOnlyRecipeSerializer(recipe)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
@@ -69,6 +70,39 @@ class RecipeViewSet(viewsets.ModelViewSet):
             raise ValidationError('Рецепт не был в избранном!')
         favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=True,
+        methods=['post', 'delete'],
+        permission_classes=[permissions.IsAuthenticated, ]
+    )
+    def shopping_cart(self, request, pk):
+        if request.method == 'POST':
+            recipe = get_object_or_404(Recipe, pk=pk)
+            user = request.user
+            if ShoppingCart.objects.filter(recipe=recipe, user=user).exists():
+                raise ValidationError('Уже в корзине!')
+            ShoppingCart.objects.create(recipe=recipe, user=user)
+            serializer = ShortReadOnlyRecipeSerializer(recipe)
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        elif request.method == 'DELETE':
+            recipe = get_object_or_404(Recipe, pk=pk)
+            user = request.user
+            shopping_cart = ShoppingCart.objects.filter(recipe=recipe, user=user)
+            if not shopping_cart.exists():
+                raise ValidationError('Рецепт не был в корзине!')
+            shopping_cart.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        elif request.method == 'GET':
+            # собрать все рецепты из списка покупок
+            # составить словарь с ингедиентами и кол-вом
+                # если ингредиента нет в словаре:
+                    # добавить ингредиент в словарь с кол-вом
+                # иначе
+                    # прибавить кол-во к кол-ву имеющегося ингредиента
+            # преобразовать словарь в CSV файл
+            # отправить пользователю на загрузку
+            ...
 
     def perform_create(self, serializer):
         author = self.request.user
