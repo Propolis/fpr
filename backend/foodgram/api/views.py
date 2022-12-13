@@ -1,19 +1,20 @@
+import csv
 from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import default_token_generator
+from django.http import HttpResponse
 from recipes.models import (
     FavoriteRecipe,
     Ingredient,
     Recipe,
+    RecipeIngredient,
     ShoppingCart,
     Tag,
 )
-from django.core.mail import send_mail
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
-from rest_framework.views import APIView
 
 from .serializers import (
     CreateOrUpdateRecipeSerializer,
@@ -48,6 +49,26 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'partial_update': CreateOrUpdateRecipeSerializer
         }
         return ACTION_SERIALIZER_CLASS.get(self.action)
+
+    def create_csv_file(self, ingredients):
+        response = HttpResponse(
+            content_type='text/csv',
+            headers={'Content-Disposition': 'attachment; filename="shopping_list.csv"'},
+            status=status.HTTP_201_CREATED
+        )
+        ingredients = list(ingredients)
+
+        writer = csv.DictWriter(
+            response,
+            fieldnames=[
+                'ingredient__name',
+                'ingredient__measurement_unit',
+                'ingredient_total'
+            ],
+        )
+        for row in ingredients:
+            writer.writerow(row)
+        return response
 
     @action(
         detail=True,
@@ -85,7 +106,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ShoppingCart.objects.create(recipe=recipe, user=user)
             serializer = ShortReadOnlyRecipeSerializer(recipe)
             return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-        elif request.method == 'DELETE':
+        else:
             recipe = get_object_or_404(Recipe, pk=pk)
             user = request.user
             shopping_cart = ShoppingCart.objects.filter(recipe=recipe, user=user)
@@ -93,16 +114,23 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 raise ValidationError('Рецепт не был в корзине!')
             shopping_cart.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        elif request.method == 'GET':
-            # собрать все рецепты из списка покупок
-            # составить словарь с ингедиентами и кол-вом
-                # если ингредиента нет в словаре:
-                    # добавить ингредиент в словарь с кол-вом
-                # иначе
-                    # прибавить кол-во к кол-ву имеющегося ингредиента
-            # преобразовать словарь в CSV файл
-            # отправить пользователю на загрузку
-            ...
+
+    @action(
+        detail=False,
+        methods=['get', ],
+        permission_classes=[permissions.IsAuthenticated, ]
+    )
+    def download_shopping_cart(self, request):
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__shopping_cart_recipes__user=request.user
+        ).values(
+            'ingredient__name', 'ingredient__measurement_unit'
+        ).order_by(
+            'ingredient__name'
+        ).annotate(
+            ingredient_total=Sum('amount')
+        )
+        return self.create_csv_file(ingredients)
 
     def perform_create(self, serializer):
         author = self.request.user
