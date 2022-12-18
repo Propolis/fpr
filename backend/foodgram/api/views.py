@@ -13,16 +13,21 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
+from rest_framework import views
 
 from .serializers import (
     CreateOrUpdateRecipeSerializer,
     IngredientSerializer,
     ReadOnlyRecipeSerializer,
     ShortReadOnlyRecipeSerializer,
+    SubscribeSerializer,
+    SubscriptionSerializer,
     TagSerializer,
 )
+from users.models import Subscription
 
 User = get_user_model()
 
@@ -140,3 +145,45 @@ class RecipeViewSet(viewsets.ModelViewSet):
         author = self.request.user
         serializer.save(author)
 
+
+class ListOnlySubscriptionAPIView(ListAPIView):
+    serializer_class = SubscriptionSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.subscribers.all()
+
+
+class SubscribeView(views.APIView):
+    def post(self, request, pk):
+        author = get_object_or_404(User, pk=pk)
+        subscriber = self.request.user
+        if author == subscriber:
+            raise ValidationError('Нельзя подписаться на самого себя!')
+        if Subscription.objects.filter(author=author, subscriber=subscriber).exists():
+            raise ValidationError('Вы уже подписаны на этого пользователя!')
+        serializer = SubscribeSerializer(
+            data={
+                'author': author.pk,
+                'subscriber': subscriber.pk
+            },
+            context={'request' : request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+
+    def delete(self, request, pk):
+        author = get_object_or_404(User, pk=pk)
+        subscriber = self.request.user
+        if author == subscriber:
+            raise ValidationError('Нельзя отписаться от самого себя!')
+        subscripton = Subscription.objects.filter(author=author, subscriber=subscriber)
+        if not subscripton.exists():
+            return Response(
+                data={'errors': 'Вы не были подписаны на этого пользователя!'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        subscripton.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

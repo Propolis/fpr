@@ -163,7 +163,10 @@ DJOSER = {
         'user': 'api.serializers.UserSerializer',
         'current_user': 'api.serializers.UserSerializer'
     },
-    'HIDE_USERS': False
+    'HIDE_USERS': False,
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.IsAuthenticated', ]
+    }
 }
 
 # CORS Settings

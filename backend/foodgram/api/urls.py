@@ -4,7 +4,9 @@ from rest_framework import routers
 from .views import (
     IngredientViewSet,
     TagViewSet,
-    RecipeViewSet
+    RecipeViewSet,
+    SubscribeView,
+    ListOnlySubscriptionAPIView
 )
 
 router = routers.DefaultRouter()
@@ -13,7 +15,9 @@ router.register('tags', TagViewSet)
 router.register('recipes', RecipeViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('auth/', include('djoser.urls.authtoken')),
+    path('users/<int:pk>/subscribe/', SubscribeView.as_view()),
+    path('users/subscriptions/', ListOnlySubscriptionAPIView.as_view()),
     path('', include('djoser.urls')),
-    path('auth/', include('djoser.urls.authtoken'))
+    path('', include(router.urls)),
 ]

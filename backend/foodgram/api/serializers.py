@@ -10,8 +10,9 @@ from recipes.models import (
     Recipe,
     RecipeIngredient,
     RecipeTag,
-    ShoppingCart
+    ShoppingCart,
 )
+from users.models import Subscription
 
 User = get_user_model()
 
@@ -187,3 +188,68 @@ class ShortReadOnlyRecipeSerializer(serializers.ModelSerializer):
             'image',
             'cooking_time'
         ]
+
+class SubscriptionSerializer(serializers.ModelSerializer):
+    email = serializers.ReadOnlyField(source='author.email')
+    id = serializers.ReadOnlyField(source='author.id')
+    username = serializers.ReadOnlyField(source='author.username')
+    first_name = serializers.ReadOnlyField(source='author.first_name')
+    last_name = serializers.ReadOnlyField(source='author.last_name')
+    is_subscribed = serializers.SerializerMethodField(
+        method_name='check_is_subscribed'
+    )
+    recipes = serializers.SerializerMethodField(
+        method_name='get_recipes'
+    )
+    recipes_count = serializers.SerializerMethodField(
+        method_name='count_recipes'
+    )
+
+    def check_is_subscribed(self, subscription):
+        current_user = self.context.get('request').user
+        return Subscription.objects.filter(
+            author=subscription.author,
+            subscriber=current_user
+        ).exists()
+
+    def get_recipes(self, subscription):
+        queryset = Recipe.objects.filter(author=subscription.author)
+        serializer = ShortReadOnlyRecipeSerializer(
+            queryset,
+            read_only=True,
+            many=True
+        )
+        return serializer.data
+
+    def count_recipes(self, subscription):
+        return Recipe.objects.filter(author=subscription.author).count()
+
+
+    class Meta:
+        model = Subscription
+        fields = [
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'is_subscribed',
+            'recipes',
+            'recipes_count'
+        ]
+
+
+class SubscribeSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        serializer = SubscriptionSerializer(
+            instance,
+            context=context
+        )
+        return serializer.data
+    
+    class Meta:
+        model = Subscription
+        fields = '__all__'
