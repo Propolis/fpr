@@ -1,4 +1,6 @@
 import csv
+
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from recipes.models import (
@@ -20,6 +22,7 @@ from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from rest_framework import views
 
+from .filters import IngredientFilter, TagFilter
 from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
@@ -46,12 +49,15 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = [AllowAny, ]
+    filterset_class = IngredientFilter
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrReadOnly | IsAdminUser]
     pagination_class = CustomPagination
+    filterset_class = TagFilter
+    filter_backends = [DjangoFilterBackend, ]
 
     def get_serializer_class(self):
         ACTION_SERIALIZER_CLASS = {
