@@ -1,26 +1,19 @@
 import csv
 
-from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth import get_user_model
-from django.http import HttpResponse
-from recipes.models import (
-    FavoriteRecipe,
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    ShoppingCart,
-    Tag,
-)
 from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from djoser.views import UserViewSet
-from rest_framework import mixins, permissions, status, viewsets
-from rest_framework.decorators import action, api_view, permission_classes
+
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+                            RecipeIngredient, ShoppingCart, Tag)
+from rest_framework import permissions, status, views, viewsets
+from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
-from rest_framework import views
 
 from .filters import IngredientFilter, TagFilter
 from .pagination import CustomPagination
@@ -32,7 +25,7 @@ from .serializers import (
     ShortReadOnlyRecipeSerializer,
     SubscribeSerializer,
     SubscriptionSerializer,
-    TagSerializer,
+    TagSerializer
 )
 from users.models import Subscription
 
@@ -72,7 +65,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def create_csv_file(self, ingredients):
         response = HttpResponse(
             content_type='text/csv',
-            headers={'Content-Disposition': 'attachment; filename="shopping_list.csv"'},
+            headers={
+                'Content-Disposition': 'attachment; '
+                + 'filename="shopping_list.csv"'
+            },
             status=status.HTTP_201_CREATED
         )
         ingredients = list(ingredients)
@@ -98,11 +94,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if request.method == 'POST':
             recipe = get_object_or_404(Recipe, pk=pk)
             user = request.user
-            if FavoriteRecipe.objects.filter(recipe=recipe, user=user).exists():
+            if FavoriteRecipe.objects.filter(
+                recipe=recipe,
+                user=user
+            ).exists():
                 raise ValidationError('Уже в избранном!')
             FavoriteRecipe.objects.create(recipe=recipe, user=user)
             serializer = ShortReadOnlyRecipeSerializer(recipe)
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                data=serializer.data,
+                status=status.HTTP_201_CREATED
+            )
         recipe = get_object_or_404(Recipe, pk=pk)
         user = request.user
         favorite = FavoriteRecipe.objects.filter(recipe=recipe, user=user)
@@ -124,11 +126,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 raise ValidationError('Уже в корзине!')
             ShoppingCart.objects.create(recipe=recipe, user=user)
             serializer = ShortReadOnlyRecipeSerializer(recipe)
-            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                data=serializer.data,
+                status=status.HTTP_201_CREATE
+            )
         else:
             recipe = get_object_or_404(Recipe, pk=pk)
             user = request.user
-            shopping_cart = ShoppingCart.objects.filter(recipe=recipe, user=user)
+            shopping_cart = ShoppingCart.objects.filter(
+                recipe=recipe,
+                user=user
+            )
             if not shopping_cart.exists():
                 raise ValidationError('Рецепт не был в корзине!')
             shopping_cart.delete()
@@ -178,26 +186,31 @@ class SubscribeView(views.APIView):
         subscriber = self.request.user
         if author == subscriber:
             raise ValidationError('Нельзя подписаться на самого себя!')
-        if Subscription.objects.filter(author=author, subscriber=subscriber).exists():
+        if Subscription.objects.filter(
+            author=author,
+            subscriber=subscriber
+        ).exists():
             raise ValidationError('Вы уже подписаны на этого пользователя!')
         serializer = SubscribeSerializer(
             data={
                 'author': author.pk,
                 'subscriber': subscriber.pk
             },
-            context={'request' : request}
+            context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
-
 
     def delete(self, request, pk):
         author = get_object_or_404(User, pk=pk)
         subscriber = self.request.user
         if author == subscriber:
             raise ValidationError('Нельзя отписаться от самого себя!')
-        subscripton = Subscription.objects.filter(author=author, subscriber=subscriber)
+        subscripton = Subscription.objects.filter(
+            author=author,
+            subscriber=subscriber
+        )
         if not subscripton.exists():
             return Response(
                 data={'errors': 'Вы не были подписаны на этого пользователя!'},

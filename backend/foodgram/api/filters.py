@@ -1,5 +1,5 @@
-from django.contrib.auth import get_user_model
 from django_filters.rest_framework import FilterSet, filters
+from django.contrib.auth import get_user_model
 
 from recipes.models import Ingredient, Recipe, Tag
 
@@ -22,7 +22,9 @@ class TagFilter(FilterSet):
         to_field_name='slug'
     )
     is_favorited = filters.BooleanFilter(method='check_is_favorited')
-    is_in_shopping_cart = filters.BooleanFilter(method='check_is_in_shopping_cart')
+    is_in_shopping_cart = filters.BooleanFilter(
+        method='check_is_in_shopping_cart'
+    )
 
     def check_is_favorited(self, queryset, name, value):
         current_user = self.request.user
