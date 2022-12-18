@@ -164,6 +164,9 @@ DJOSER = {
         'current_user': 'api.serializers.CustomUserSerializer'
     },
     'PERMISSIONS': {
+        'set_password': ['djoser.permissions.CurrentUserOrAdmin'],
+        'set_username': ['djoser.permissions.CurrentUserOrAdmin'],
+        'user_delete': ['djoser.permissions.CurrentUserOrAdmin'],
         'user': ['rest_framework.permissions.IsAuthenticated', ],
         'user_list': ['rest_framework.permissions.AllowAny'],
     },
