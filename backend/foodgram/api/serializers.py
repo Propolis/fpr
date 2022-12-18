@@ -17,7 +17,19 @@ from users.models import Subscription
 User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
+class CustomUserSerializer(UserSerializer):
+    is_subscribed = serializers.SerializerMethodField(
+        method_name='check_is_subscribed'
+    )
+
+    def check_is_subscribed(self, user):
+        request = self.context.get('request')
+        if request.user.is_anonymous:
+            return False
+        return Subscription.objects.filter(
+            subscriber=request.user,
+            author=user
+        ).exists()
 
     class Meta:
         model = User
@@ -27,7 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
-            # 'is_subscribed:bool',
+            'is_subscribed',
         ]
 
 
@@ -76,7 +88,7 @@ class RecipeTagSerializer(serializers.ModelSerializer):
 
 class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True)
-    author = UserSerializer(many=False)
+    author = CustomUserSerializer(many=False)
     ingredients = ReadOnlyRecipeIngredientSerializer(many=True, source='recipeingredient_set')
     is_favorited = serializers.SerializerMethodField(method_name='check_is_favorited')
     is_in_shopping_cart = serializers.SerializerMethodField(method_name='check_is_in_shopping_cart')

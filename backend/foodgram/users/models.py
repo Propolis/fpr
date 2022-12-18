@@ -3,31 +3,10 @@ from django.db import models
 
 
 class User(AbstractUser):
-    USER = 'USR'
-    ADMIN = 'ADM'
-    USER_ROLE_CHOICES = [
-        (USER, 'user'),
-        (ADMIN, 'admin')
-    ]
+    email = models.EmailField(unique=True, blank=False, max_length=254)
 
-    role = models.CharField(
-        max_length=3,
-        verbose_name="Роль",
-        choices=USER_ROLE_CHOICES,
-        default='USR',
-        blank=False,
-    )
-
-    username = models.CharField(
-        verbose_name="Имя пользователя", max_length=32, unique=True
-    )
-    email = models.EmailField(unique=True, blank=False)
-    first_name = models.CharField(max_length=64, blank=False)
-    last_name = models.CharField(max_length=64, blank=False)
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
 
 class Subscription(models.Model):

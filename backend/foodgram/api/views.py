@@ -11,6 +11,7 @@ from recipes.models import (
 )
 from django.db.models import Sum
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.generics import ListAPIView
