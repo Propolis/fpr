@@ -15,10 +15,12 @@ from djoser.views import UserViewSet
 from rest_framework import mixins, permissions, status, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from rest_framework import views
 
+from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     CreateOrUpdateRecipeSerializer,
     IngredientSerializer,
@@ -36,15 +38,18 @@ User = get_user_model()
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    permission_classes = [AllowAny, ]
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    permission_classes = [AllowAny, ]
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
+    permission_classes = [IsAuthorOrReadOnly]
 
     def get_serializer_class(self):
         ACTION_SERIALIZER_CLASS = {
@@ -149,6 +154,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
 class ListOnlySubscriptionAPIView(ListAPIView):
     serializer_class = SubscriptionSerializer
+    permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
         user = self.request.user
@@ -156,6 +162,8 @@ class ListOnlySubscriptionAPIView(ListAPIView):
 
 
 class SubscribeView(views.APIView):
+    permission_classes = [IsAuthenticated, ]
+
     def post(self, request, pk):
         author = get_object_or_404(User, pk=pk)
         subscriber = self.request.user
