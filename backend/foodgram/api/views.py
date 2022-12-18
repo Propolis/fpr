@@ -157,7 +157,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         author = self.request.user
-        serializer.save(author)
+        serializer.save(author=author)
 
 
 class ListOnlySubscriptionAPIView(ListAPIView):
