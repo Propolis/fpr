@@ -47,7 +47,7 @@ class Recipe(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(
-        max_length=200,
+        max_length=30,
         unique=True,
         verbose_name='Название тега',
         help_text='Название тега'
@@ -57,7 +57,7 @@ class Tag(models.Model):
         unique=True
     )
     slug = models.SlugField(
-        max_length=200,
+        max_length=30,
         unique=True
     )
 
@@ -67,7 +67,7 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        max_length=100,
+        max_length=254,
         verbose_name='Название ингридиента'
     )
     measurement_unit = models.CharField(
