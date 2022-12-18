@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
+from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 
 from recipes.models import (
     FavoriteRecipe,
@@ -92,6 +92,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
     ingredients = ReadOnlyRecipeIngredientSerializer(many=True, source='recipeingredient_set')
     is_favorited = serializers.SerializerMethodField(method_name='check_is_favorited')
     is_in_shopping_cart = serializers.SerializerMethodField(method_name='check_is_in_shopping_cart')
+    image = Base64ImageField()
 
     def is_in_list(self, obj, model):
         request = self.context.get('request')
@@ -116,7 +117,7 @@ class ReadOnlyRecipeSerializer(serializers.ModelSerializer):
             'is_favorited',
             'is_in_shopping_cart',
             'name',
-            'image',    # Картинка закодирована в base64 (см. ЯП)
+            'image',
             'text',
             'cooking_time',
         ]
@@ -134,6 +135,7 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
         many=True,
         required=False
     )
+    image = Base64ImageField()
 
     class Meta:
         depth = 3
@@ -191,6 +193,7 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
 
 
 class ShortReadOnlyRecipeSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
 
     class Meta:
         model = Recipe
