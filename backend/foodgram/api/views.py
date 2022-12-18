@@ -20,6 +20,7 @@ from rest_framework.response import Response
 from rest_framework.validators import ValidationError
 from rest_framework import views
 
+from .pagination import CustomPagination
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (
     CreateOrUpdateRecipeSerializer,
@@ -50,6 +51,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     permission_classes = [IsAuthorOrReadOnly | IsAdminUser]
+    pagination_class = CustomPagination
 
     def get_serializer_class(self):
         ACTION_SERIALIZER_CLASS = {
@@ -155,6 +157,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 class ListOnlySubscriptionAPIView(ListAPIView):
     serializer_class = SubscriptionSerializer
     permission_classes = [IsAuthenticated, ]
+    pagination_class = CustomPagination
 
     def get_queryset(self):
         user = self.request.user
