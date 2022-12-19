@@ -152,6 +152,10 @@ media/
 uploads/
 
 
+# Docker
+Dockerfile
+
+
 # Other
 todo
 
