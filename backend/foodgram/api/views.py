@@ -140,10 +140,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
         if ThroughModel.objects.filter(recipe=recipe, user=user).exists():
-            # Заметка из ревью: "Тут нужно вернуть ответ - Response"
-            # Но ведь DRF по дефолту возвращает Response с нужным статусом 400,
-            # когда вызывается исключение ValidationError
-            # https://www.django-rest-framework.org/api-guide/exceptions/#validationerror
             raise ValidationError('Рецепт уже добавлен!')
         ThroughModel.objects.create(recipe=recipe, user=user)
         serializer = ShortReadOnlyRecipeSerializer(recipe)
@@ -157,7 +153,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             user=user
         )
         if not object.exists():
-            # здесь и далее см. коммент выше
             raise ValidationError(
                 'Нельзя удалить рецепт, так как он не был добавлен'
             )
