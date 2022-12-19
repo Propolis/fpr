@@ -156,6 +156,9 @@ uploads/
 Dockerfile
 
 
+# Settings
+settings.ini
+
+
 # Other
 todo
-
