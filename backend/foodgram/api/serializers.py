@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from recipes.models import (
     FavoriteRecipe,
@@ -73,8 +74,15 @@ class ReadOnlyRecipeIngredientSerializer(serializers.ModelSerializer):
 class CreateRecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all(),
-        read_only=False
+        read_only=False,
     )
+
+    def validate_amount(self, value):
+        if value < 1:
+            raise serializers.ValidationError(
+                'Количество ингердиентов не может быть меньше единицы!'
+            )
+        return value
 
     class Meta:
         model = RecipeIngredient
@@ -136,7 +144,7 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
     ingredients = CreateRecipeIngredientSerializer(
         read_only=False,
         many=True,
-        required=True
+        required=True,
     )
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
@@ -161,6 +169,19 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
     def to_representation(self, recipe):
         serializer = ReadOnlyRecipeSerializer(recipe, context=self.context)
         return serializer.data
+
+    def validate(self, attrs):
+        ingredients = attrs['ingredients']
+        uniq_ings = []
+        for ingredient in ingredients:
+            ing_id = ingredient['id']
+            if ing_id not in uniq_ings:
+                uniq_ings.append(ing_id)
+            else:
+                raise serializers.ValidationError(
+                    'Ингредиенты не должны повторяться!'
+                )
+        return attrs
 
     def create(self, validated_data):
         ingredients = validated_data.pop('ingredients')
