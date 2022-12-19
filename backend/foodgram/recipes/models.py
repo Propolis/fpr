@@ -90,6 +90,14 @@ class RecipeTag(models.Model):
         on_delete=models.CASCADE
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'tag'],
+                name='unique tag in recipe'
+            )
+        ]
+
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
