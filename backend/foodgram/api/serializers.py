@@ -166,6 +166,29 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
             'cooking_time',
         ]
 
+    def set_ingredients(self, recipe, ingredients):
+        recipe_ingredient_objects = []
+        for ingredient in ingredients:
+            ingredient_id = ingredient.get('id')
+            amount = ingredient.get('amount')
+            recipe_ingredient_object = RecipeIngredient(
+                recipe=recipe,
+                ingredient=ingredient_id,
+                amount=amount
+            )
+            recipe_ingredient_objects.append(recipe_ingredient_object)
+        RecipeIngredient.objects.bulk_create(recipe_ingredient_objects)
+
+    def set_tags(self, recipe, tags):
+        recipe_tag_objects = []
+        for tag in tags:
+            recipe_tag_object = RecipeTag(
+                recipe=recipe,
+                tag=tag
+            )
+            recipe_tag_objects.append(recipe_tag_object)
+        RecipeTag.objects.bulk_create(recipe_tag_objects)
+
     def to_representation(self, recipe):
         serializer = ReadOnlyRecipeSerializer(recipe, context=self.context)
         return serializer.data
@@ -187,17 +210,9 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients')
         tags = validated_data.pop('tags', None)
         recipe = Recipe.objects.create(**validated_data)
-        for ingredient in ingredients:
-            ingredient_id = ingredient.get('id')
-            amount = ingredient.get('amount')
-            RecipeIngredient.objects.create(
-                recipe=recipe,
-                ingredient=ingredient_id,
-                amount=amount
-            )
+        self.set_ingredients(recipe, ingredients)
         if tags:
-            for tag in tags:
-                RecipeTag.objects.create(recipe=recipe, tag=tag)
+            self.set_tags(recipe, tags)
         return recipe
 
     def update(self, recipe, validated_data):
@@ -205,18 +220,10 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags', None)
         if ingredients:
             recipe.ingredients.clear()
-            for ingredient in ingredients:
-                ingredient_id = ingredient.get('id')
-                amount = ingredient.get('amount')
-                RecipeIngredient.objects.create(
-                    recipe=recipe,
-                    ingredient=ingredient_id,
-                    amount=amount
-                )
+            self.set_ingredients(recipe, ingredients)
         if tags:
             recipe.tags.clear()
-            for tag in tags:
-                RecipeTag.objects.create(recipe=recipe, tag=tag)
+            self.set_tags(recipe, tags)
         return recipe
 
 
