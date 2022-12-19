@@ -136,10 +136,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         author = self.request.user
         serializer.save(author=author)
 
-    def perform_update(self, serializer):
-        author = self.request.user
-        serializer.save(author=author)
-
     def add_recipe(self, ThroughModel, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
