@@ -157,7 +157,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             user=user
         )
         if not object.exists():
-            # см. сообщение выше
+            # здесь и далее см. коммент выше
             raise ValidationError(
                 'Нельзя удалить рецепт, так как он не был добавлен'
             )
