@@ -16,8 +16,16 @@ router.register('recipes', RecipeViewSet)
 
 urlpatterns = [
     path('auth/', include('djoser.urls.authtoken')),
-    path('users/<int:pk>/subscribe/', SubscribeView.as_view()),
-    path('users/subscriptions/', ListOnlySubscriptionAPIView.as_view()),
+    path(
+        'users/<int:pk>/subscribe/',
+        SubscribeView.as_view(),
+        name='users-detail-subscribe'
+    ),
+    path(
+        'users/subscriptions/',
+        ListOnlySubscriptionAPIView.as_view(),
+        name='users-subscribtions'
+    ),
     path('', include('djoser.urls')),
     path('', include(router.urls)),
 ]
