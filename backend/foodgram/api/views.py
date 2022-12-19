@@ -99,26 +99,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         if request.method == 'POST':
-            recipe = get_object_or_404(Recipe, pk=pk)
-            user = request.user
-            if FavoriteRecipe.objects.filter(
-                recipe=recipe,
-                user=user
-            ).exists():
-                raise ValidationError('Уже в избранном!')
-            FavoriteRecipe.objects.create(recipe=recipe, user=user)
-            serializer = ShortReadOnlyRecipeSerializer(recipe)
-            return Response(
-                data=serializer.data,
-                status=status.HTTP_201_CREATED
-            )
-        recipe = get_object_or_404(Recipe, pk=pk)
-        user = request.user
-        favorite = FavoriteRecipe.objects.filter(recipe=recipe, user=user)
-        if not favorite.exists():
-            raise ValidationError('Рецепт не был в избранном!')
-        favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            print(pk)
+            return self.add_recipe(FavoriteRecipe, pk=pk)
+        else:
+            return self.remove_recipe(FavoriteRecipe, pk=pk)
 
     @action(
         detail=True,
@@ -127,27 +111,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def shopping_cart(self, request, pk):
         if request.method == 'POST':
-            recipe = get_object_or_404(Recipe, pk=pk)
-            user = request.user
-            if ShoppingCart.objects.filter(recipe=recipe, user=user).exists():
-                raise ValidationError('Уже в корзине!')
-            ShoppingCart.objects.create(recipe=recipe, user=user)
-            serializer = ShortReadOnlyRecipeSerializer(recipe)
-            return Response(
-                data=serializer.data,
-                status=status.HTTP_201_CREATE
-            )
+            return self.add_recipe(ShoppingCart, pk=pk)
         else:
-            recipe = get_object_or_404(Recipe, pk=pk)
-            user = request.user
-            shopping_cart = ShoppingCart.objects.filter(
-                recipe=recipe,
-                user=user
-            )
-            if not shopping_cart.exists():
-                raise ValidationError('Рецепт не был в корзине!')
-            shopping_cart.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return self.remove_recipe(ShoppingCart, pk=pk)
 
     @action(
         detail=False,
@@ -173,6 +139,34 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def perform_update(self, serializer):
         author = self.request.user
         serializer.save(author=author)
+
+    def add_recipe(self, ThroughModel, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
+        if ThroughModel.objects.filter(recipe=recipe, user=user).exists():
+            # Заметка из ревью: "Тут нужно вернуть ответ - Response"
+            # Но ведь DRF по дефолту возвращает Response с нужным статусом 400,
+            # когда вызывается исключение ValidationError
+            # https://www.django-rest-framework.org/api-guide/exceptions/#validationerror
+            raise ValidationError('Рецепт уже добавлен!')
+        ThroughModel.objects.create(recipe=recipe, user=user)
+        serializer = ShortReadOnlyRecipeSerializer(recipe)
+        return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+
+    def remove_recipe(self, ThroughModel, pk):
+        recipe = get_object_or_404(Recipe, pk=pk)
+        user = self.request.user
+        object = ThroughModel.objects.filter(
+            recipe=recipe,
+            user=user
+        )
+        if not object.exists():
+            # см. сообщение выше
+            raise ValidationError(
+                'Нельзя удалить рецепт, так как он не был добавлен'
+            )
+        object.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class ListOnlySubscriptionAPIView(ListAPIView):
