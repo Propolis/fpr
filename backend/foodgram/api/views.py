@@ -147,11 +147,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def remove_recipe(self, ThroughModel, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
-        object = ThroughModel.objects.filter(
+        instance = ThroughModel.objects.filter(
             recipe=recipe,
             user=user
         )
-        if not object.exists():
+        if not instance.exists():
             return Response(
                 data={
                     'errors': 'Нельзя удалить рецепт, '
@@ -159,7 +159,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
-        object.delete()
+        instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
