@@ -10,7 +10,6 @@ from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.validators import ValidationError
 
 from .filters import IngredientFilter, TagFilter
 from .pagination import CustomPagination
@@ -97,7 +96,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     )
     def favorite(self, request, pk):
         if request.method == 'POST':
-            print(pk)
             return self.add_recipe(FavoriteRecipe, pk=pk)
         else:
             return self.remove_recipe(FavoriteRecipe, pk=pk)
@@ -138,7 +136,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
         if ThroughModel.objects.filter(recipe=recipe, user=user).exists():
-            raise ValidationError('Рецепт уже добавлен!')
+            return Response(
+                data={'errors': 'Рецепт уже добавлен!'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         ThroughModel.objects.create(recipe=recipe, user=user)
         serializer = ShortReadOnlyRecipeSerializer(recipe)
         return Response(data=serializer.data, status=status.HTTP_201_CREATED)
@@ -146,15 +147,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def remove_recipe(self, ThroughModel, pk):
         recipe = get_object_or_404(Recipe, pk=pk)
         user = self.request.user
-        object = ThroughModel.objects.filter(
+        instance = ThroughModel.objects.filter(
             recipe=recipe,
             user=user
         )
-        if not object.exists():
-            raise ValidationError(
-                'Нельзя удалить рецепт, так как он не был добавлен'
+        if not instance.exists():
+            return Response(
+                data={
+                    'errors': 'Нельзя удалить рецепт, '
+                    + 'так как он не был добавлен'
+                },
+                status=status.HTTP_400_BAD_REQUEST
             )
-        object.delete()
+        instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -175,12 +180,18 @@ class SubscribeView(views.APIView):
         author = get_object_or_404(User, pk=pk)
         subscriber = self.request.user
         if author == subscriber:
-            raise ValidationError('Нельзя подписаться на самого себя!')
+            return Response(
+                data={'errors': 'Нельзя подписаться на самого себя!'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         if Subscription.objects.filter(
             author=author,
             subscriber=subscriber
         ).exists():
-            raise ValidationError('Вы уже подписаны на этого пользователя!')
+            return Response(
+                data={'errors': 'Вы уже подписаны на этого пользователя!'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = SubscribeSerializer(
             data={
                 'author': author.pk,
@@ -196,7 +207,10 @@ class SubscribeView(views.APIView):
         author = get_object_or_404(User, pk=pk)
         subscriber = self.request.user
         if author == subscriber:
-            raise ValidationError('Нельзя отписаться от самого себя!')
+            return Response(
+                data={'errors': 'Нельзя отписаться от самого себя!'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         subscripton = Subscription.objects.filter(
             author=author,
             subscriber=subscriber
