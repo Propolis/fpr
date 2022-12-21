@@ -30,11 +30,12 @@ services:
     build:
       context: ../backend
     restart: always
+    expose:
+      - 8000
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
     depends_on:
-      - nginx
       - postgresql
     env_file:
       - ./.env
