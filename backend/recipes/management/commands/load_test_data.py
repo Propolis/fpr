@@ -10,7 +10,7 @@ file_model_dict = {
     'tags.csv': Tag,
     'ingredients.csv': Ingredient,
 }
-path = BASE_DIR / 'data/'
+data_path = BASE_DIR / '/data/'
 
 
 class Command(BaseCommand):
@@ -18,11 +18,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for file_path, model in file_model_dict.items():
-            with open(f'{path}{file_path}') as file:
+            with open(f'{data_path}{file_path}') as file:
                 rows = len(file.readlines()) - 1
                 file.close()
 
-            with open(f'{path}{file_path}') as file:
+            with open(f'{data_path}{file_path}') as file:
                 countdown = Bar(
                     f'Creating data from {file_path} > ',
                     max=rows
