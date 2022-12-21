@@ -2,9 +2,7 @@ version: '3.3'
 services:
 
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
+    image: gagai/foodgram-frontend:latest
     volumes:
       - ../frontend/:/app/result_build/
 
@@ -29,8 +27,7 @@ services:
       - ./.env
 
   backend:
-    build:
-      context: ../backend
+    image: gagai/foodgram-backend:latest
     restart: always
     expose:
       - 8000

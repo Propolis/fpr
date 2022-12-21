@@ -148,12 +148,8 @@ migrations/*
 
 
 # Media files
-media/
+backend_media/
 uploads/
-
-
-# Settings
-settings.ini
 
 
 # Other
