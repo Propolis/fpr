@@ -35,7 +35,7 @@ class TagFilter(FilterSet):
     def check_is_in_shopping_cart(self, queryset, name, value):
         current_user = self.request.user
         if current_user.is_authenticated and value:
-            return queryset.filter(shopping_cart_users__user=current_user)
+            return queryset.filter(shopping_cart_recipes__user=current_user)
         return queryset
 
     class Meta:
