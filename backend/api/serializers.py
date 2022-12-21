@@ -223,7 +223,7 @@ class CreateOrUpdateRecipeSerializer(serializers.ModelSerializer):
         if tags:
             recipe.tags.clear()
             self.set_tags(recipe, tags)
-        return recipe
+        return super().update(recipe, validated_data)
 
 
 class ShortReadOnlyRecipeSerializer(serializers.ModelSerializer):
