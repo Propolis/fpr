@@ -10,7 +10,7 @@ file_model_dict = {
     'tags.csv': Tag,
     'ingredients.csv': Ingredient,
 }
-path = str(BASE_DIR) + ('/../../data/')
+path = BASE_DIR / 'data/'
 
 
 class Command(BaseCommand):
