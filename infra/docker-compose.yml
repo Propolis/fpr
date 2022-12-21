@@ -27,12 +27,14 @@ services:
       - ./.env
 
   backend:
-    image: gagai/foodgram:latest
+    build:
+      context: ../backend
     restart: always
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
     depends_on:
+      - nginx
       - postgresql
     env_file:
       - ./.env

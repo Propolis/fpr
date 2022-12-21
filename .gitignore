@@ -152,10 +152,6 @@ media/
 uploads/
 
 
-# Docker
-backend/foodgram/Dockerfile
-
-
 # Settings
 settings.ini
 
