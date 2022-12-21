@@ -7,8 +7,8 @@ from foodgram.settings import BASE_DIR
 from recipes.models import Ingredient, Tag
 
 file_model_dict = {
-    'tags.csv': Tag,
-    'ingredients.csv': Ingredient,
+    '/tags.csv': Tag,
+    '/ingredients.csv': Ingredient,
 }
 data_path = BASE_DIR / '/data/'
 
