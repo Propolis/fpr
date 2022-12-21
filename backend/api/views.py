@@ -54,7 +54,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthorOrReadOnly | IsAdminUser]
     pagination_class = CustomPagination
     filterset_class = TagFilter
-    filter_backends = [DjangoFilterBackend, ]
 
     def get_serializer_class(self):
         ACTION_SERIALIZER_CLASS = {
