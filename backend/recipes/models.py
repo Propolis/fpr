@@ -10,7 +10,8 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         related_name='recipes',
-        blank=False
+        blank=False,
+        verbose_name='Автор',
     )
     name = models.CharField(
         max_length=100,
@@ -19,7 +20,9 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         upload_to='recipes/images/',
-        blank=True
+        blank=True,
+        verbose_name='Изображение',
+        help_text='Загрузи изображение!'
     )
     text = models.TextField(
         verbose_name='Текст рецепта',
@@ -29,21 +32,33 @@ class Recipe(models.Model):
         'Ingredient',
         through='RecipeIngredient',
         related_name='recipes',
+        verbose_name='Ингредиенты',
+        help_text='Добавь ингредиенты!\nНе забудь нажать кнопку "Добавить"'
     )
     tags = models.ManyToManyField(
         'Tag',
         through='RecipeTag',
         related_name='recipes',
-        blank=True
+        blank=True,
+        verbose_name='Теги',
+        help_text='Добавь теги!'
     )
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время готовки в минутах',
         help_text='Сколько минут займёт готовка?'
+    ),
+    pub_date = models.DateTimeField(
+        'Дата публикации',
+        auto_now_add=True,
     )
 
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-pub_date']
+        verbose_name = 'Рецепт'
+        verbose_name_plural = 'Рецепты'
 
 class Tag(models.Model):
     name = models.CharField(
@@ -64,6 +79,10 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
 
 class Ingredient(models.Model):
     name = models.CharField(
@@ -78,6 +97,10 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
 
 
 class RecipeTag(models.Model):
@@ -97,6 +120,8 @@ class RecipeTag(models.Model):
                 name='unique tag in recipe'
             )
         ]
+        verbose_name = 'Теги, привязанные к рецептам'
+        verbose_name_plural = 'Связь рецепт-тег'
 
 
 class RecipeIngredient(models.Model):
@@ -119,6 +144,8 @@ class RecipeIngredient(models.Model):
                 name='unique ingredient in recipe'
             )
         ]
+        verbose_name = 'Ингредиенты в рецепте'
+        verbose_name_plural = 'Связь рецепт-ингредиент'
 
 
 class FavoriteRecipe(models.Model):
@@ -140,6 +167,8 @@ class FavoriteRecipe(models.Model):
                 name='unique_favorite_recipe'
             ),
         ]
+        verbose_name = 'Избранный рецепт'
+        verbose_name_plural = 'Избранное'
 
 
 class ShoppingCart(models.Model):
@@ -161,3 +190,5 @@ class ShoppingCart(models.Model):
                 name='unique_shopping_cart_recipe'
             ),
         ]
+        verbose_name = 'Рецепт в корзине'
+        verbose_name_plural = 'Корзина'
