@@ -10,8 +10,8 @@
 
 # Плюс почему-то не работает anonymous volume для контейнера postgresql, пришлось дать имя
 # После docker compose down на сервере все данные пропадают.
-# Может, я как-то н е так использую?
+# Может, я как-то не так использую?
 
 # http://51.250.78.241/
 # email: mikhail@ivanov.com
-# password: 
+# password: zxcvbn11
