@@ -1,7 +1,4 @@
-# http://gagai-foodgram.webhop.me/recipes
-
-##### email: mikhail@ivanov.com
-##### password: zxcvbn11
+# http://gagai-foodgram.webhop.me
 
 # Foodgram - это сервис для публикации ваших рецептов.
 ##### Здесь вы можете создать свои рецепты и просматривать рецепты других пользователей.
