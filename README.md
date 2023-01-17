@@ -32,6 +32,7 @@ nano .env
 ```
 Файл .env заполняется следующим образом:
 
+```
 SECRET_KEY=django-insecure-$9*$q+7jq5^%kp#$1+y+r-h0$d9_$+y4a6n5)h67o(v&bk_#r+
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=postgres
@@ -39,6 +40,7 @@ DB_USER=postgres
 POSTGRES_PASSWORD=postgres **(установите свой)**
 DB_HOST=postgresql
 DB_PORT=5432
+```
 
 Убедитесь, что у вас свободны порты 8000 и 5432.
 После запуска docker-compose создайте миграции, соберите статику,
