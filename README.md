@@ -1,4 +1,4 @@
-# http://gagai-foodgram.webhop.me
+# gagai-foodgram.webhop.me
 
 # Foodgram - это сервис для публикации ваших рецептов.
 ##### Здесь вы можете создать свои рецепты и просматривать рецепты других пользователей.
@@ -10,7 +10,7 @@
  * настройка админ панели Django
 
 ##### Полную спецификацию по проекту можно посмотреть здесь:
-* http://gagai-foodgram.webhop.me/api/docs/
+* gagai-foodgram.webhop.me/api/docs/
 
 ##### Проект разворачивается в четырёх Docker контейнерах:
 * foodgram-frontend: отвечает за сборку фронтенда
