@@ -21,7 +21,7 @@
 ##### Запуск проекта:
 Скопируйте репозиторий
 ```
-git@github.com:gagai/foodgram-project-react.git
+git clone git@github.com:gagai/foodgram-project-react.git
 ```
 
 Перейдите в папку развертывания инфраструктуры проекта 
